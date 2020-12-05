@@ -1,0 +1,7 @@
+/target/
+/project
+/.bsp
+/src/main/scala/y2020/.DS_Store
+/adventofcode.iml
+/.idea
+/src/main/scala/.DS_Store
