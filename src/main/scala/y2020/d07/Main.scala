@@ -1,15 +1,12 @@
 package y2020.d07
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines().toList
+object Main extends Runner {
 
-    // first
+  override def first(lines: List[String]): Long = {
     val reverseBagMap =
-      inputs
+      lines
         .flatMap { line =>
           val splits = line.split(" bags contain ", 2)
           val regex = "\\d+\\s(\\w+\\s\\w+) bag".r
@@ -32,10 +29,11 @@ object Main {
       .reduce(_.union(_))
       .toList
 
-    println(s"first count ${bags.size}")
+    bags.size
+  }
 
-    // second
-    val bagCountMap = inputs
+  override def second(lines: List[String]): Long = {
+    val bagCountMap = lines
       .flatMap { line =>
         val splits = line.split(" bags contain ", 2)
         val regex = "(\\d+)\\s(\\w+\\s\\w+) bag".r
@@ -48,28 +46,26 @@ object Main {
       .mapValues(_.map(_._2))
       .toMap
 
-    val bagCount =
-      LazyList
-        .iterate(List(Tuple2(bagCountMap("shiny gold"), 1))) { rows =>
-          rows.flatMap {
-            case (bagCountPair, multiplier) =>
-              bagCountPair.flatMap {
-                case (name, count) => {
-                  bagCountMap.get(name).toList.map((_, count * multiplier))
-                }
+    LazyList
+      .iterate(List(Tuple2(bagCountMap("shiny gold"), 1))) { rows =>
+        rows.flatMap {
+          case (bagCountPair, multiplier) =>
+            bagCountPair.flatMap {
+              case (name, count) => {
+                bagCountMap.get(name).toList.map((_, count * multiplier))
               }
-          }
+            }
         }
-        .takeWhile(_.nonEmpty)
-        .toList
-        .flatMap { r =>
-          r.flatMap {
-            case (bagCountPair, multiplier) =>
-              bagCountPair.map(_._2 * multiplier)
-          }
+      }
+      .takeWhile(_.nonEmpty)
+      .toList
+      .flatMap { r =>
+        r.flatMap {
+          case (bagCountPair, multiplier) =>
+            bagCountPair.map(_._2 * multiplier)
         }
-        .sum
-
-    println(s"total count: ${bagCount}")
+      }
+      .sum
   }
+
 }

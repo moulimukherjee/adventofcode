@@ -1,33 +1,27 @@
 package y2020.d08
 
+import common.Runner
+
 import scala.collection.mutable
-import scala.io.Source
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines().toArray
+object Main extends Runner {
+  override def first(lines: List[String]): Long = calc(lines.toArray)._1
 
-    // first
-    val first = calc(inputs)._1
-    println(s"first ${first}")
-
-    // second
-    val second = inputs.zipWithIndex
+  override def second(lines: List[String]): Long = {
+    lines.zipWithIndex
       .filter(s => s._1.startsWith("jmp") || s._1.startsWith("nop"))
       .map {
         case (op, index) =>
           val replacedArray =
-            if (inputs(index).startsWith("jmp"))
-              inputs.updated(index, op.replace("jmp", "nop"))
-            else inputs.updated(index, op.replace("nop", "jmp"))
+            if (lines(index).startsWith("jmp"))
+              lines.updated(index, op.replace("jmp", "nop"))
+            else lines.updated(index, op.replace("nop", "jmp"))
 
-          calc(replacedArray)
+          calc(replacedArray.toArray)
       }
-      .find(_._2 == inputs.size - 1)
+      .find(_._2 == lines.size - 1)
       .map(_._1)
-
-    println(s"second ${second}")
+      .get
   }
 
   def calc(inputs: Array[String]) = {
@@ -46,4 +40,14 @@ object Main {
       .takeWhile(l => !state.contains(l._2) && l._2 < inputs.size)
       .last
   }
+
+  override val testInput: String = """nop +0
+                                      |acc +1
+                                      |jmp +4
+                                      |acc +3
+                                      |jmp -3
+                                      |acc -99
+                                      |acc +1
+                                      |jmp -4
+                                      |acc +6""".stripMargin
 }

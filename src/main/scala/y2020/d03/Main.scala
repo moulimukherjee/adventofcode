@@ -1,42 +1,48 @@
 package y2020.d03
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines()
+object Main extends Runner {
 
-    val pattern = inputs.map(_.toCharArray).toArray
-    val maxRows = pattern.size
-    val maxColumns = pattern.head.size
-
-    // first
-    val treeCount = 0.until(maxRows).count { row =>
-      val column = (3 * row) % maxColumns
+  override def first(lines: List[String]): Long = {
+    val pattern = lines.map(_.toCharArray).toArray
+    0.until(pattern.size).count { row =>
+      val column = (3 * row) % pattern.head.size
       pattern(row)(column) == '#'
     }
-    println(s"first result ${treeCount}")
+  }
 
-    // second
+  override def second(lines: List[String]): Long = {
+    val pattern = lines.map(_.toCharArray).toArray
+
     def countTrees(stepRight: Int, stepDown: Int): Long = {
-      0.until(maxRows)
+      0.until(pattern.size)
         .by(stepDown)
         .zipWithIndex
         .count {
           case (r, i) =>
-            val c = (stepRight * i) % maxColumns
+            val c = (stepRight * i) % pattern.head.size
             pattern(r)(c) == '#'
         }
         .toLong
     }
-
-    val secondResult = countTrees(1, 1) *
+    countTrees(1, 1) *
       countTrees(3, 1) *
       countTrees(5, 1) *
       countTrees(7, 1) *
       countTrees(1, 2)
-    println(s"second result ${secondResult}")
-
   }
+
+  override val testInput: String = """..##.......
+                                      |#...#...#..
+                                      |.#....#..#.
+                                      |..#.#...#.#
+                                      |.#...##..#.
+                                      |..#.##.....
+                                      |.#.#.#....#
+                                      |.#........#
+                                      |#.##...#...
+                                      |#...##....#
+                                      |.#..#...#.#""".stripMargin
+
 }

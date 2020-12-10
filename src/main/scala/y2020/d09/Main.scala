@@ -1,26 +1,28 @@
 package y2020.d09
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines().toArray
+object Main extends Runner {
 
-    val nums = inputs.map(_.toLong)
-
-    val invalidNum = nums.zipWithIndex
-      .takeRight(nums.size - 25)
+  def findInvalid(nums: List[Long], preamble: Int) = {
+    nums.zipWithIndex
+      .takeRight(nums.size - preamble)
       .find {
         case (n, i) =>
-          val (start, end) = (i - 25, i)
+          val (start, end) = (i - preamble, i)
           !valid(nums.slice(start, end + 1).toSet, n)
       }
       .map(_._1)
       .get
 
-    println(s"first ${invalidNum}")
+  }
 
+  override def first(lines: List[String]): Long =
+    findInvalid(lines.map(_.toLong), 25)
+
+  override def second(lines: List[String]): Long = {
+    val invalidNum = first(lines)
+    val nums = lines.map(_.toLong)
     val indicesRange = nums.zipWithIndex
       .flatMap {
         case (n, i) =>
@@ -43,14 +45,38 @@ object Main {
 
     val slice = nums.slice _ tupled indicesRange
 
-    val weakness = slice.min + slice.max
-
-    println(s"second ${weakness}")
-
+    slice.min + slice.max
   }
 
-  def valid(nums: Set[Long], sum: Long): Boolean = {
+  def valid(nums: Set[Long], sum: Long): Boolean =
     nums.find(n => nums.contains(sum - n)).nonEmpty
+
+  override def adhocTest: Unit = {
+    val lines = """35
+                  |20
+                  |15
+                  |25
+                  |47
+                  |40
+                  |62
+                  |55
+                  |65
+                  |95
+                  |102
+                  |117
+                  |150
+                  |182
+                  |127
+                  |219
+                  |299
+                  |277
+                  |309
+                  |576""".stripMargin
+      .split("\n")
+      .toList
+      .map(_.toLong)
+
+    assert(findInvalid(lines, 5) == 127)
   }
 
 }

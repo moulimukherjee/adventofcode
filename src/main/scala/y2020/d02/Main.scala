@@ -1,16 +1,12 @@
 package y2020.d02
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines().toList
+object Main extends Runner {
+  val format = "(\\d+)-(\\d+)\\s(\\w):\\s(\\w+)".r
 
-    val format = "(\\d+)-(\\d+)\\s(\\w):\\s(\\w+)".r
-
-    // first
-    val firstCount = inputs.count { str =>
+  override def first(lines: List[String]): Long = {
+    lines.count { str =>
       str match {
         case format(min, max, letter, pwd) =>
           val count = pwd.toCharArray.count(_ == letter.toCharArray.head)
@@ -18,10 +14,10 @@ object Main {
         case _ => sys.error("could not match")
       }
     }
-    println(s"first count = ${firstCount}")
+  }
 
-    // second
-    val secondCount = inputs.count { str =>
+  override def second(lines: List[String]): Long = {
+    lines.count { str =>
       str match {
         case format(min, max, letter, pwd) =>
           val first = pwd.length >= min.toInt && pwd.charAt(min.toInt - 1) == letter.toCharArray.head
@@ -30,7 +26,12 @@ object Main {
         case _ => sys.error("could not match")
       }
     }
-    println(s"second count = ${secondCount}")
-
   }
+
+  override val testInput =
+    """1-3 a: abcde
+      |1-3 b: cdefg
+      |2-9 c: ccccccccc
+      |""".stripMargin
+
 }

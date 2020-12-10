@@ -1,20 +1,15 @@
 package y2020.d05
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs =
-      Source.fromURL(getClass.getResource("input.txt")).getLines().toList
+object Main extends Runner {
 
-    // first
-    val max = inputs.map(seatId).max
-    println(s"max ${max}")
+  override def first(lines: List[String]): Long = lines.map(seatId).max
 
-    // second
+  override def second(lines: List[String]): Long = {
     val neighbours =
-      inputs.map(seatId).sorted.sliding(2).find(l => l.tail.head - l.head == 2)
-    println(s"seat = ${neighbours.get.head + 1}")
+      lines.map(seatId).sorted.sliding(2).find(l => l.tail.head - l.head == 2)
+    neighbours.get.head + 1
   }
 
   def seatId(str: String): Long = {
@@ -29,4 +24,5 @@ object Main {
 
     (column * 8) + row
   }
+
 }

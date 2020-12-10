@@ -1,29 +1,35 @@
 package y2020.d01
 
-import scala.io.Source
+import common.Runner
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val inputs = Source.fromURL(getClass.getResource("input.txt")).getLines()
-    val nums = inputs.map(_.toLong).toSet
+object Main extends Runner {
 
-    // first
-    nums.find(num => nums(2020 - num)) match {
-      case Some(n) => println(s"$n x ${2020 - n} = ${(2020 - n) * n}")
-      case None    => sys.error("failed!")
-    }
-
-    // second
-    val output = nums.flatMap { n =>
-      val o = nums.find(m => nums(2020 - n - m))
-      if (o.nonEmpty) Some(n, o.get) else None
-    }
-
-    output.toList.headOption match {
-      case Some((m, n)) =>
-        println(s"$n x $m x ${2020 - n - m} = ${(2020 - n - m) * n * m}")
-      case None => sys.error("failed!")
-    }
-
+  override def first(lines: List[String]): Long = {
+    val nums = lines.map(_.toLong).toSet
+    nums.find(num => nums(2020 - num)).map(n => (2020 - n) * n).get
   }
+
+  override def second(lines: List[String]): Long = {
+    val nums = lines.map(_.toLong).toSet
+
+    nums
+      .flatMap { n =>
+        val o = nums.find(m => nums(2020 - n - m))
+        if (o.nonEmpty) Some(n, o.get) else None
+      }
+      .toList
+      .headOption
+      .map {
+        case (m, n) => (2020 - n - m) * n * m
+      }
+      .get
+  }
+
+  override val testInput =
+    """1721
+      |979
+      |366
+      |299
+      |675
+      |1456""".stripMargin
 }
