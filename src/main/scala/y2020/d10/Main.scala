@@ -29,16 +29,14 @@ object Main extends Runner {
       else {
         if (cache.get(i).isEmpty) {
           val curr = nums(i)
-          val branch1 =
-            if (i - 1 >= 0 && curr - nums(i - 1) <= 3) pathsToLeaf(i - 1)
+
+          val branches = 1.to(3).map { j =>
+            if (i - j >= 0 && curr - nums(i - j) <= 3)
+              pathsToLeaf(i - j)
             else 0L
-          val branch2 =
-            if (i - 2 >= 0 && curr - nums(i - 2) <= 3) pathsToLeaf(i - 2)
-            else 0L
-          val branch3 =
-            if (i - 3 >= 0 && curr - nums(i - 3) <= 3) pathsToLeaf(i - 3)
-            else 0L
-          cache.put(i, branch1 + branch2 + branch3)
+          }
+
+          cache.put(i, branches.sum)
         }
 
         cache.get(i).get
